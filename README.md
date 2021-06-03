@@ -11,13 +11,14 @@ Asp.NET Core MVC is for BackEnd, and JQuery is for Front End.
 - Entity Framework Core (SQL Server)
 - AutoMapper
 - Bootstrap 5.0
+- JWT Authentication
 
 ---
 
 ## Features
 - N-tier architecture
 - Entity Framework Core (Code First) with generic repository pattern for data access layer
-- Authentication
+- Authentication with JWT Authentication
 - Dependency Injection
 - Server Side Pagination
 - API for backend testable by Postman
@@ -57,5 +58,7 @@ Asp.NET Core MVC is for BackEnd, and JQuery is for Front End.
 - Select the 'Haulio.FarmFresh.Web' project as the startup project.
 - Check the connection string in the appsettings.json file of the 'Haulio.FarmFresh.Web' project, change it if you want.
 - Open Package Manager Console, Select the 'Haulio.FarmFresh.DAL' project as the default project. and run the **Update-Database** command to create your database.
-
+- You need to be authorized for Search Product. 
+  Please login first by click Triangle Button after Cart Image. 
+  Credential : Username : *Haulio* , Password : *FarmFresh*
 
