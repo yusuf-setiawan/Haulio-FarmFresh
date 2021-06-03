@@ -1,0 +1,210 @@
+﻿@using Haulio.FarmFresh.DTO.DTOs
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model Haulio.FarmFresh.DTO.Wrappers.PagedResponse<List<ProductToListDTO>>
+@{
+    Layout = "_Layoutuser";
+    var Token = HttpContextAccessor.HttpContext.Session.GetString("Token") ?? "";
+    ViewData["Title"] = "Product Detail";
+}
+<div class="page-content d-flex align-items-stretch h-100" id="productspage">
+    <div class="content-inner">
+        <div class="container h-100">
+            <label id="ImageUrl" style="display:none">images/salmon.png</label>
+            <label id="ProductId" style="display:none">2</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <img id="prodImage" src="~/images/salmon.png"
+                         alt="salmon"
+                         class="image-responsive w-100" />
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 id="ProductName">Ripe Blue Grapes</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span id="Unit" style="font-family: fantasy;" class="label label-primary">Packet of 1 bundle</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p id="Description" class="description">
+                                From the heart of the french Alps after a journey of more
+                                than 70 years, springs this Ripe Blue Grapes. Thanks to
+                                this amazing journey through the Chambotte mountains,
+                                it acquires its unique fresgqualities. With our passion for
+                                preserving this natural heritage, we are proud to offer you
+                                this moment of purity in your busy lives.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="label label-primary nav-span-color" style="font-style: italic;">Country of Origin</span>
+                            <h3 class="font-weight-bold" id="CountryOfOrigin">France</h3>
+                        </div>
+                    </div>
+                    <div class="row add-to-cart float-left">
+                        <div class="input-group m-2" style="width:40%!important">
+                            <span class="input-group-prepend">
+                                <button type="button" class="btn btn-outline-secondary btn-number h-100" disabled="disabled" data-type="minus" data-field="quant[1]">
+                                    <span class="fa fa-minus"></span>
+                                </button>
+                            </span>
+                            <input type="text" id="Qty" name="quant[1]" class="form-control input-number h-100" value="1" min="1" max="999">
+                            <span class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary btn-number h-100" data-type="plus" data-field="quant[1]">
+                                    <span class="fa fa-plus"></span>
+                                </button>
+                            </span>
+                        </div>
+                        @*<div class="col-md-4">*@
+                        <button id="btnCart" class="btn btn-dark col-5 m-2">
+                            Add to Cart
+                        </button>
+                        @*</div>*@
+                    </div><!-- end row -->
+                </div><!-- end row -->
+            </div><!-- end container -->
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $('.btn-number').click(function (e) {
+            e.preventDefault();
+
+            fieldName = $(this).attr('data-field');
+            type = $(this).attr('data-type');
+            var input = $("input[name='" + fieldName + "']");
+            var currentVal = parseInt(input.val());
+            if (!isNaN(currentVal)) {
+                if (type == 'minus') {
+
+                    if (currentVal > input.attr('min')) {
+                        input.val(currentVal - 1).change();
+                    }
+                    if (parseInt(input.val()) == input.attr('min')) {
+                        $(this).attr('disabled', true);
+                    }
+
+                } else if (type == 'plus') {
+
+                    if (currentVal < input.attr('max')) {
+                        input.val(currentVal + 1).change();
+                    }
+                    if (parseInt(input.val()) == input.attr('max')) {
+                        $(this).attr('disabled', true);
+                    }
+
+                }
+            } else {
+                input.val(0);
+            }
+        });
+        $('.input-number').focusin(function () {
+            $(this).data('oldValue', $(this).val());
+        });
+        $('.input-number').change(function () {
+
+            minValue = parseInt($(this).attr('min'));
+            maxValue = parseInt($(this).attr('max'));
+            valueCurrent = parseInt($(this).val());
+
+            name = $(this).attr('name');
+            if (valueCurrent >= minValue) {
+                $(".btn-number[data-type='minus'][data-field='" + name + "']").removeAttr('disabled')
+            } else {
+                alert('Sorry, the minimum value was reached');
+                $(this).val($(this).data('oldValue'));
+            }
+            if (valueCurrent <= maxValue) {
+                $(".btn-number[data-type='plus'][data-field='" + name + "']").removeAttr('disabled')
+            } else {
+                alert('Sorry, the maximum value was reached');
+                $(this).val($(this).data('oldValue'));
+            }
+        });
+        $(".input-number").keydown(function (e) {
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 190]) !== -1 ||
+                // Allow: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+
+        $('#btnCart').click(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: "POST",
+                url: "/Api/Product/Cart",
+                 headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer @Token'
+                 },
+               data: JSON.stringify({
+                    imageurl: $("#ImageUrl").text(),
+                    productname: $("#ProductName").text(),
+                    unit: $("#Unit").text(),
+                    productid: $("#ProductId").text(),
+                    qty: parseInt($("#Qty").val()),
+                }),
+                beforeSend: function () {
+                    $('#productspage').html("<div id='loader'></div>");
+                },
+                success: function (data) {
+                    window.location = "/Products"
+                },
+                error: function (response) {
+                    alert("Session Time Out, please login")
+                    window.location.href = "/";
+               }
+            });
+
+        });
+
+        $(document).ready(function () {
+            if ("@Token" == "")
+                window.location.href = "/";
+
+            var currUrl = window.location.href.split('/')
+            var productId = currUrl[currUrl.length - 1];
+             $.ajax({
+                type: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer @Token'
+                 },
+                 url: "/Api/Product/" + productId,
+                success: function (response) {
+                    $("#ImageUrl").text(response.data.imageUrl);
+                    $("#ProductName").text(response.data.productName);
+                    $("#Unit").text(response.data.unit);
+                    $("#ProductId").text(response.data.productId);
+                    $("#CountryOfOrigin").text(response.data.countryOfOrigin);
+                    $("#Description").text(response.data.description);
+
+                    document.getElementById('prodImage').src = "/" + response.data.imageUrl;
+                },
+                error: function (response) {
+                    alert("Session Time Out, please login")
+                    window.location.href = "/";
+                }
+            });
+        });
+    </script>
+}

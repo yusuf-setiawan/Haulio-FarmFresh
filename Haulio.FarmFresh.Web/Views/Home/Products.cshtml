@@ -1,0 +1,139 @@
+﻿@using Haulio.FarmFresh.DTO.DTOs
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@model Haulio.FarmFresh.DTO.Wrappers.PagedResponse<List<ProductToListDTO>>
+@{
+    Layout = "_Layoutuser";
+
+    var Token = HttpContextAccessor.HttpContext.Session.GetString("Token") ?? "";
+    ViewData["Title"] = "Product";
+}
+
+<link rel="stylesheet" href="~/css/main.css" />
+
+<div class="page-content d-flex align-items-stretch h-100" id="productspage">
+    <div class="content-inner">
+        <div class="container h-100">
+            <div>
+                <div id="listData" class="row" />
+            </div>
+            <div style="height:10%">
+                <div style="class=" paging-footer w-100 float-right mt-5 col-12">
+                    <div class="d-inline font-italic">
+                        <label class="mr-2">Show </label>
+                        <select onchange="changeRecordCount()" id="PageSize" class="col-2 mx-1">
+                            <option id="5" value="5">5</option>
+                            <option id="10" value="10">10</option>
+                            <option id="20" value="4">20</option>
+                        </select>
+                        <label class="mr-2">Rows </label>
+
+                    </div>
+                    <div id="paging" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        var currentPage = 1;
+
+        $('#btnSearch').on("click", function (event) {
+            event.preventDefault();
+            var pageNumber = currentPage;
+            var pageSize = $("#PageSize option:selected").text();
+            var search = $("#searchText").val();
+
+            GetProducts(pageNumber, pageSize, search)
+        });
+
+        function changeRecordCount() {
+            var pageNumber = currentPage;
+            var pageSize = $("#PageSize option:selected").text();
+            var search = $("#searchText").val();
+
+            GetProducts(pageNumber, pageSize, search)
+        }
+        function ChangePage(pageNumber) {
+            currentPage = pageNumber;
+            var pageNumber = pageNumber;
+            var pageSize = $("#PageSize option:selected").text();
+            var search = $("#searchText").val();
+
+            GetProducts(pageNumber, pageSize, search)
+        }
+
+        function GetProducts(pageNumber, pageSize, search) {
+            currentPage = pageNumber;
+
+            var Request = {
+                PageNumber: pageNumber,
+                PageSize: pageSize,
+                Search: search
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "/Api/Product",
+                data: Request,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer @Token'
+                },
+                success: function (response) {
+                    if (response.succeeded) {
+                        let htmlAppend = "";
+                        response.data.forEach(function (product) {
+                            htmlAppend += `
+                                    <div class="col-md-4 col-sm-12 product-margin">
+                                        <a href="/ProductDetail/` + product.productId + `" class="product-thumbnail">
+                                            <img src="` + product.imageUrl + `" class="img-rounded w-100" style="overflow: hidden; cursor:pointer" />
+                                        </a>
+                                        <h3 class="font-weight-bold mt-3 ml-3">` + product.productName + `</h3>
+                                        <h3 class="font-weight-bold mt-3 ml-3">` + product.unit + `</h3>
+                                    </div>
+                              `;
+                        });
+                        $("#listData").html(htmlAppend);
+
+                        htmlAppend = `<nav aria-label="Page navigation">
+                                            <ul class="pagination">`;
+
+                        for (let i = 1; i <= response.totalPages; i++) {
+                            if (i == response.pageNumber) {
+                                htmlAppend += `<li class="page-item active"><a class="page-link" href="#" onclick="ChangePage(` + i + `)">` + i + `</a></li>`
+                            }
+                            else {
+                                htmlAppend += `<li class="page-item"><a class="page-link" href="#" onclick="ChangePage(` + i + `)">` + i + `</a></li>`
+
+                            }
+                        }
+                        htmlAppend += `</ul>
+                                        </nav>`;
+
+                        $("#paging").html(htmlAppend);
+                    }
+                },
+                error: function (response) {
+                    alert("Session Time Out, please login")
+                    window.location.href = "/";
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var pageNumber = 1;
+            var pageSize = 5;
+            var search = "";
+
+            if ("@Token" == "")
+                window.location.href = "/";
+
+
+            GetProducts(pageNumber, pageSize, search)
+        });
+    </script>
+}

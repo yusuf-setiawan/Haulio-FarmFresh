@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="h-100 w-100 position-relative">
+    <div id="imgfirst" class="zoom"></div>
+    <div class="img2" id="imgsecond">
+        <div class="col-12 d-inline-flex h-50 position-relative p-3" style="padding-right: 5rem !important;">
+            <div class="col-6 p-2 w-50">
+                <h1 class="left-title">FRESH FOOD FOR A FRESHER YOU</h1>
+                <h2 class="bottom-title">Quality food, Quality life</h2>
+            </div>
+            <div class="col-6 w-50 h-100">
+                <img src="~/images/side_image.png" class="pr-3 h-100 w-100" />
+            </div>
+        </div>
+        <div class=" col-12 d-inline-flex h-50 p-3 mt-5" padding-right: 5rem!important;>
+            <div class="col-4 text-center p-2">
+                <img src="~/images/clock.png" class="smallimg" />
+                <h2 class="font-weight-bold mt-4">Online anywhere</h2>
+            </div>
+            <div class="col-4 text-center p-2">
+                <img src="~/images/delivery_truck.png" class="smallimg" />
+                <h2 class="font-weight-bold mt-4">Fast Delivery</h2>
+            </div>
+            <div class="col-4 text-center p-2">
+                <img src="~/images/support.png" class="smallimg" />
+                <h2 class="font-weight-bold mt-4">24/7 Support</h2>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var element = document.getElementById("imgsecond");
+            element.classList.add("overlay");
+        });
+    </script>
+}
+

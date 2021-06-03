@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var Token = HttpContextAccessor.HttpContext.Session.GetString("Token") ?? "";
+    var CartCount = @HttpContextAccessor.HttpContext.Session.GetString("CartCount") ?? "";
+}
+
+<header class="border-bottom shadow" style="height: 13%;" id="myheader">
+    <div class="container-fluid d-inline-flex py-3 gap-3 align-items-center h-100" style="grid-template-columns: 1fr 2fr;">
+        <div style="width: 60%;padding-right: 2rem;
+">
+            <a class="d-flex align-items-center mb-2 mb-lg-0 link-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+            <img style="width: 200px; padding-top: 1rem;" src="~/images/farmfresh_logo.png" /></a>
+        </div>
+        <div class="d-block w-100">
+            <form class="me-3">
+                <div class="input-group pt-3">
+                    @{
+                        if (!String.IsNullOrEmpty(Token))
+                        {
+                            <input id="searchText" type="text" class="form-control" placeholder="Search for a product or Brand" aria-label="Search for a product or Brand" aria-describedby="btnSearch">
+                            <button class="btn btn-search" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                        }
+                        else
+                        {
+                            <input id="searchText" type="text" class="form-control" placeholder="Search for a product or Brand" aria-label="Search for a product or Brand" aria-describedby="btnSearch" disabled="disabled" style="height: 50;">
+                            <button class="btn-search" type="button" id="btnSearch"><i class="fa fa-search" disabled></i></button>
+                        }
+                    }
+                </div>
+            </form>
+        </div>
+        <div style="width:40%"></div>
+        <div  style="width:10%" class="flex-shrink-0 dropdown">
+            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle pr-1 float-right" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="~/images/shopping_cart.png" alt="Cart" width="50" height="50">
+                <span style="color:gray">
+                    @CartCount
+                </span>
+            </a>
+            <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2" style="">
+                <li>
+                    @{
+                        if (!String.IsNullOrEmpty(Token))
+                        {
+                            <a class="dropdown-item" href="#" onclick="SignOut()">Sign out</a>
+                        }
+                        else
+                        {
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Sign in</a>
+                        }
+                    }
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+</header>
+<script>
+    function SignOut() {
+        $.ajax({
+            type: "POST",
+            url: "/SignOut",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            beforeSend: function () {
+                // setting a timeout
+                $('#myheader').html("<div id='loader'></div>");
+            },
+            success: function (data) {
+                alert("Sign Out Successfully")
+                window.location.href = "/";
+            },
+            error: function (response) {
+                alert("Sign Out Failed")
+            }
+        });
+    }
+
+</script>
