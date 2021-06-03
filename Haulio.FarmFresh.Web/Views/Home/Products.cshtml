@@ -90,10 +90,10 @@
                             htmlAppend += `
                                     <div class="col-md-4 col-sm-12 product-margin">
                                         <a href="/ProductDetail/` + product.productId + `" class="product-thumbnail">
-                                            <img src="` + product.imageUrl + `" class="img-rounded w-100" style="overflow: hidden; cursor:pointer" />
+                                            <img src="` + product.imageUrl + `" class="img-rounded w-100 h-100" style="overflow: hidden; cursor:pointer" />
                                         </a>
-                                        <h3 class="font-weight-bold mt-3 ml-3">` + product.productName + `</h3>
-                                        <h3 class="font-weight-bold mt-3 ml-3">` + product.unit + `</h3>
+                                        <h3 class="font-weight-bold" style="margin-left: 1rem;">` + product.productName + `</h3>
+                                        <h3 class="font-weight-bold" style="margin-left: 1rem;color: dimgray;">` + product.unit + `</h3>
                                     </div>
                               `;
                         });
