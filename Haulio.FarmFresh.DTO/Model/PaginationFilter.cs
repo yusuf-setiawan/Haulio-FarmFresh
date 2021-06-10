@@ -15,7 +15,7 @@
         public PaginationFilter(int pageNumber, int pageSize)
         {
             this.PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            this.PageSize = pageSize > 5 ? 5 : pageSize;
+            this.PageSize = pageSize < 5 ? 5 : pageSize;
             this.Search = "";
         }
     }
